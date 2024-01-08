@@ -40,9 +40,11 @@ def task(args, syncer):
                     if line.strip().startswith(b.name) and b.progress != progress:
                         changedBooks.append(b)
     except FileNotFoundError:
-        print("No cache file found")
+        print("No cache file found. Using all books.")
+        changedBooks = books
     except Exception as e:
         print("Error reading cache file: {}".format(e))
+        exit(1)
 
     syncer.sync(changedBooks)
     # write books to cache
