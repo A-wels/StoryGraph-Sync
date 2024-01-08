@@ -4,6 +4,7 @@ idna==3.6
 nextcloud-api-wrapper==0.2.3
 rapidfuzz==3.6.1
 requests==2.31.0
+schedule==1.2.1
 six==1.16.0
 thefuzz==0.20.0
 urllib3==2.1.0
