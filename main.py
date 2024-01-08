@@ -27,9 +27,28 @@ def main():
 def task(args, syncer):
     # get list of books from moon+ reader cache files
     print("[{}] SYNCING....".format(time.strftime("%H:%M:%S")))
+
     books = moonplus.get_moonplus_books(
         args.path)
-    syncer.sync(books)
+    changedBooks = []
+    # try to read previous books from cache
+    try:
+        with open(args.path + "/books.txt", "r") as f:
+            for line in f:
+                for b in books:
+                    progress = float(line.split(" ")[-1].split("%")[0])
+                    if line.strip().startswith(b.name) and b.progress != progress:
+                        changedBooks.append(b)
+    except FileNotFoundError:
+        print("No cache file found")
+    except Exception as e:
+        print("Error reading cache file: {}".format(e))
+
+    syncer.sync(changedBooks)
+    # write books to cache
+    with open(args.path + "/books.txt", "w") as f:
+        for b in books:
+            f.write(str(b) + "\n")
     print("[{}] GOING BACK TO SLEEP....".format(time.strftime("%H:%M:%S")))
 
 
