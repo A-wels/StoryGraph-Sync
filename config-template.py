@@ -1,0 +1,6 @@
+email=""
+password=""
+
+NEXTCLOUD_URL=""
+NEXTCLOUD_USERNAME = ""
+NEXTCLOUD_PASSWORD = ""
