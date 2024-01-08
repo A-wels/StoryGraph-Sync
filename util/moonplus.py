@@ -6,6 +6,11 @@ from nextcloud import NextCloud
 
 
 def get_moonplus_books(path):
+
+    # create cache folder if it does not exist
+    if not os.path.exists(path):
+        os.makedirs(path)
+
     # get list of files from nextcloud
     _download_from_nextcloud(path)
     # get list of books from moon+ reader cache files. Each book has a .po file at the path
