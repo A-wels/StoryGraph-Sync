@@ -19,3 +19,5 @@ Run `python main.py`
 
 The reading progress will be synced every hour.
 
+# Disclaimer
+This project is not affiliated with TheStoryGraph. Use at your own risk.
