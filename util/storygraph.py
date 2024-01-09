@@ -153,7 +153,7 @@ class StoryGraphSyncer:
                                      book.name + " to read")
 
             else:
-                logging.info("No match found. ")
+                logging.info("No match found.\n")
 
                 # Print the response from the server
 
