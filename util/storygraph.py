@@ -119,7 +119,6 @@ class StoryGraphSyncer:
                 url = "https://app.thestorygraph.com/update-progress"
                 if (len(post_values) == 0):
                     post_values = [0, 0, 0, 0]
-                print(post_values)
                 data = {
                     "read_status[progress_minutes]": "",
                     "read_status[progress_number]": str(int(book.progress)),

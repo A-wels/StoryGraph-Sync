@@ -58,7 +58,7 @@ def task(args):
                 for b in books:
                     progress = float(line.split(" ")[-2].split("%")[0])
                     finished = line.endswith("True\n")
-                    if line.strip().startswith(b.name) and (b.progress != progress or b.isFinished != finished):
+                    if line.strip().startswith(b.name) and (float(b.progress) != progress or b.isFinished != finished):
                         changedBooks.append(b)
     except FileNotFoundError:
         logging.info("No cache file found. Using all books.")
