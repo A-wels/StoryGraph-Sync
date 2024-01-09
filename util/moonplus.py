@@ -1,4 +1,5 @@
 
+import logging
 import os
 from util.book import Book
 import config
@@ -36,10 +37,15 @@ def get_moonplus_books(path):
 
 
 def _download_from_nextcloud(cache_path):
-    print("Downloading from Nextcloud...")
+    logging.info("Downloading from Nextcloud...")
     with NextCloud(endpoint=config.NEXTCLOUD_URL, user=config.NEXTCLOUD_USERNAME,
                    password=config.NEXTCLOUD_PASSWORD) as nxc:
         folderpath = "Apps/Books/.Moon+/Cache"
+        # remove all po files from cache folder
+        for f in os.listdir(cache_path):
+            if (f.endswith(".po")):
+                os.remove(cache_path + "/" + f)
+
         # get list of files from nextcloud
         folders = nxc.list_folders(folderpath)
         for f in folders.data:
@@ -49,5 +55,5 @@ def _download_from_nextcloud(cache_path):
                 href = f.href.split('/remote.php/dav/files/alex/')[1]
                 # Get the filename
                 # Download the file
-                print("Downloading " + href + "...")
+                logging.info("Downloading " + href + "...")
                 nxc.download_file(href, cache_path, overwrite=True)

@@ -1,6 +1,7 @@
-email=""
-password=""
+email = ""
+password = ""
 
-NEXTCLOUD_URL=""
+NEXTCLOUD_URL = ""
 NEXTCLOUD_USERNAME = ""
 NEXTCLOUD_PASSWORD = ""
+AUDIOBOOKSHELF_TOKEN = ""

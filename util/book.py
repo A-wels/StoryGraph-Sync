@@ -7,8 +7,9 @@ class Book:
     storygraph_total_pages = 0
     pages = 0
     progress = 0.
+    isFinished = False
 
-    def __init__(self, name, progress):
+    def __init__(self, name, progress, isFinished=False):
         if (" - " in name):
             self.name = name.split(" - ")[:-1][0]
             self.author = name.split(" - ")[-1]
@@ -16,8 +17,9 @@ class Book:
             self.name = name
             self.author = ""
         self.progress = progress
+        self.isFinished = isFinished
 
     # make book object printable
 
     def __str__(self):
-        return self.name + " by " + self.author + " " + str(self.progress) + "%"
+        return self.name + " by " + self.author + " " + str(self.progress) + "% " + str(self.isFinished)

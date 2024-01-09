@@ -1,3 +1,4 @@
+import logging
 import config
 import requests
 from thefuzz import process
@@ -12,18 +13,13 @@ class StoryGraphSyncer:
 
     def __init__(self):
         # get tokens
-        # try to get token from file
-        try:
-            with open("token.txt", "r") as file:
-                self.token = file.read()
-        except:
-            self.token = ""
         if self.token == "":
             self.get_tokens()
-        self.post_values, self.currently_reading = self.get_currently_reading()
+        # get currently reading books
+        self.get_currently_reading()
 
     def get_tokens(self):
-        print("Logging into StoryGraph")
+        logging.info("Logging into StoryGraph")
         # get storygraph beta session
         headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0',
@@ -69,11 +65,8 @@ class StoryGraphSyncer:
         try:
             token = response.cookies["remember_user_token"]
             self.token = token
-            # write token to file for next time
-            with open("token.txt", "w") as file:
-                file.write(token)
         except:
-            print("Error getting token")
+            logging.error("Error getting token")
             exit()
 
     def sync(self, books):
@@ -84,12 +77,10 @@ class StoryGraphSyncer:
         for book in books:
             # get best match
             best_match = process.extractOne(book.name, current_books)
-            print("")
-
-            print("Trying to match " + book.name)
+            logging.info("Trying to match " + book.name)
             if best_match[1] >= 90:
                 # if match is good enough, add book to currently reading
-                print("Matched " + book.name + " with " + best_match[0])
+                logging.info("Matched " + book.name + " with " + best_match[0])
                 # get id of book: first value in self.currently_reading
                 id = ""
                 for c in self.currently_reading:
@@ -102,6 +93,9 @@ class StoryGraphSyncer:
                 for p in self.post_values:
                     if p[0] == id:
                         post_values = p
+                        # if post values are empty: book has not been started yet.
+                        if (len(post_values) == 0):
+                            post_values = [0, 0, 0, 0]
                         break
                 # send post to storygraph
                 headers = {
@@ -121,9 +115,11 @@ class StoryGraphSyncer:
                 }
                 cookies = {"remember_user_token": self.token,
                            "_storygraph_beta_session": self.beta_session}
-                # Replace with the actual API endpoint
-                url = "https://app.thestorygraph.com/update-progress"
 
+                url = "https://app.thestorygraph.com/update-progress"
+                if (len(post_values) == 0):
+                    post_values = [0, 0, 0, 0]
+                print(post_values)
                 data = {
                     "read_status[progress_minutes]": "",
                     "read_status[progress_number]": str(int(book.progress)),
@@ -138,12 +134,27 @@ class StoryGraphSyncer:
                 response = requests.post(
                     url, headers=headers, data=data, cookies=cookies)
                 if (response.status_code == 200):
-                    print("Successfully updated " + book.name)
-                    print("New Progress: " + str(book.progress) + "%\n")
+                    logging.info("Successfully updated " + book.name)
+                    logging.info("New Progress: " + str(book.progress) + "%\n")
                 else:
-                    print("Error updating " + book.name)
+                    logging.error("Error updating " + book.name)
+
+                # set book to read if progress is 100%
+                if (int(book.progress) == 100 or book.isFinished):
+                    logging.info("Finished " + book.name)
+                    data = {
+                        "book_id": id,
+                        "status": "read",
+                    }
+                    url = "https://app.thestorygraph.com/update-status"
+                    response = requests.post(
+                        url, headers=headers, data=data, cookies=cookies)
+                    if (response.status_code == 200):
+                        logging.info("Successfully set " +
+                                     book.name + " to read")
+
             else:
-                print("No match found. ")
+                logging.info("No match found. ")
 
                 # Print the response from the server
 
@@ -173,7 +184,8 @@ class StoryGraphSyncer:
         # remove duplicates
         currently_reading_books = list(dict.fromkeys(currently_reading_books))
 
-        return post_values, currently_reading_books
+        self.post_values = post_values
+        self.currently_reading = currently_reading_books
 
     def get_post_values(self, response):
         # result entry consists of four values: book-id, read_status[last_reached_pages], read_status[book_num_of_pages], read_status[last_reached_percent]
