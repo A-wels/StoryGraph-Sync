@@ -1,0 +1,7 @@
+config.py
+token.txt
+Cache/
+__pycache__/
+.vscode
+.venv
+.pytest_cache/
