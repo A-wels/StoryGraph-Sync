@@ -5,7 +5,7 @@ from thefuzz import process
 
 
 class StoryGraphSyncer:
-    beta_session = ""
+    session = ""
     csrf_token = ""
     token = ""
     currently_reading = []
@@ -20,7 +20,7 @@ class StoryGraphSyncer:
 
     def get_tokens(self):
         logging.info("Logging into StoryGraph")
-        # get storygraph beta session
+        # get storygraph session
         headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0',
             'Accept': 'text/html, application/xhtml+xml'
@@ -28,7 +28,7 @@ class StoryGraphSyncer:
         }
         response = requests.get(
             "https://app.thestorygraph.com/users/sign_in", headers=headers)
-        self.beta_session = response.cookies["_storygraph_beta_session"]
+        self.session = response.cookies["_storygraph_session"]
 
         # get csrf token: content of <meta name="csrf-token" content="TOKEN">
         self.csrf_token = response.text.split(
@@ -38,7 +38,7 @@ class StoryGraphSyncer:
         headers = {
             'Host': 'app.thestorygraph.com',
             # Include the full Cookie value
-            'Cookie': '_storygraph_beta_session='+self.beta_session,
+            'Cookie': '_storygraph_session='+self.session,
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
@@ -114,7 +114,7 @@ class StoryGraphSyncer:
                     'Connection': 'keep-alive',
                 }
                 cookies = {"remember_user_token": self.token,
-                           "_storygraph_beta_session": self.beta_session}
+                           "_storygraph_session": self.session}
 
                 url = "https://app.thestorygraph.com/update-progress"
                 if (len(post_values) == 0):
