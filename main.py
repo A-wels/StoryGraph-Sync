@@ -37,12 +37,21 @@ def task(args):
     if (args.audiobookshelf):
         audiobookshelfSync = audiobookshelf.AudioBookShelfSyncer()
         # add all audiobooks to book list
-        for book in audiobookshelfSync.get_audiobookshelf_books():
+        try:
+            audiobooks = audiobookshelfSync.get_audiobookshelf_books()
+        except:
+            audiobooks = []
+            logging.error("Could not get progress from audiobookshelf")
+        for book in audiobooks:
             books.append(book)
     if (args.moonplus):
         # get list of books from moon+ reader cache files
-        for book in moonplus.get_moonplus_books(
-                args.path):
+        try:
+            moonbooks = moonplus.get_moonplus_books()
+        except:
+            moonbooks = []
+            logging.error('Could not get progress from moonplus')
+        for book in moonbooks: 
             books.append(book)
 
     # login to storygraph to prepare sync
