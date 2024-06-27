@@ -47,10 +47,11 @@ def task(args):
     if (args.moonplus):
         # get list of books from moon+ reader cache files
         try:
-            moonbooks = moonplus.get_moonplus_books()
+            moonbooks = moonplus.get_moonplus_books(args.path)
         except:
             moonbooks = []
             logging.error('Could not get progress from moonplus')
+            logging.exception('')
         for book in moonbooks: 
             books.append(book)
 
