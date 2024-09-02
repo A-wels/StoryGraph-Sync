@@ -62,11 +62,9 @@ class StoryGraphSyncer:
         response = requests.post(
             'https://app.thestorygraph.com/users/sign_in', headers=headers, data=data, allow_redirects=False)
 
-        try:
-            token = response.cookies["remember_user_token"]
-            self.token = token
-        except:
-            logging.error("Error getting token")
+        token = response.cookies["remember_user_token"]
+        self.token = token
+        logging.error("Error getting token")
 
     def sync(self, books):
         # try to match books with currently reading books by comparing titles. Get best match
@@ -77,7 +75,7 @@ class StoryGraphSyncer:
             # get best match
             best_match = process.extractOne(book.name, current_books)
             logging.info("Trying to match " + book.name)
-            if best_match[1] >= 90:
+            if best_match[1] >= 70:
                 # if match is good enough, add book to currently reading
                 logging.info("Matched " + book.name + " with " + best_match[0])
                 # get id of book: first value in self.currently_reading
@@ -160,11 +158,7 @@ class StoryGraphSyncer:
         # get currently reading books
         currently_reading = []
         cookies = {"remember_user_token": self.token}
-        try:
-            currently_reading = requests.get(
-             "https://app.thestorygraph.com/currently-reading/alex_reads_", cookies=cookies).content.decode("utf-8")
-        except:
-            logging.error("Could not get currently read books from storygraph")
+        currently_reading = requests.get("https://app.thestorygraph.com/currently-reading/alex_reads_", cookies=cookies).content.decode("utf-8")
         # get values for post request
         post_values = self.get_post_values(currently_reading)
         # all books are in a <a href="/books/{random-id}"> BOOK-TITLE </a> tag. Get the BOOK-TITLE

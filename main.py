@@ -56,7 +56,13 @@ def task(args):
             books.append(book)
 
     # login to storygraph to prepare sync
-    syncer = storygraph.StoryGraphSyncer()
+    syncer = None
+    try:
+     syncer = storygraph.StoryGraphSyncer()
+    except:
+        logging.error("Could not connect to TheStoryGraph. Going back to sleep.")
+        return
+
     # combine books from moon+ reader and audiobookshelf
 
     changedBooks = []
@@ -75,7 +81,6 @@ def task(args):
         changedBooks = books
     except Exception as e:
         logging.error("Error reading cache file: {}".format(e))
-        exit(1)
     if len(changedBooks) == 0:
         logging.info("No Changes")
     else:
