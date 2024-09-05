@@ -44,18 +44,23 @@ class AudioBookShelfSyncer:
         books = list(dict.fromkeys(books))
         # get progress for each book: (name, progress, finished)
         booksProgress = []
-        for id in tqdm(books):
-            url = "https://audio.a-wels.de/api/items/"+id+"?expanded=1&include=progress"
+        for book_id in tqdm(books):
+            url = "https://audio.a-wels.de/api/items/"+book_id+"?expanded=1&include=progress"
             response = requests.get(url, headers=header)
             if response.status_code != 200:
                 raise Exception("Error getting book: " +
                                 str(response.status_code) + " " + response.text)
             bookJson = response.json()
             # check if userMediaProgress exists
-            if "userMediaProgress" not in bookJson:
+            if "userMediaProgress" not in bookJson or bookJson["userMediaProgress"] is None:
                 continue
             else:
-                book = Book(bookJson["media"]["metadata"]["title"], str(int(float(bookJson["userMediaProgress"]["progress"])*100)),
-                            bookJson["userMediaProgress"]["isFinished"])
-                booksProgress.append(book)
+                try:
+                    book = Book(bookJson["media"]["metadata"]["title"], str(int(float(bookJson["userMediaProgress"]["progress"])*100)), bookJson["userMediaProgress"]["isFinished"])
+                    booksProgress.append(book)
+                except Exception as e:
+                    logging.error(bookJson)
+                    print(e)
+                    exit()
+
         return booksProgress

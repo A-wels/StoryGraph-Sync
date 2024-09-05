@@ -64,7 +64,6 @@ class StoryGraphSyncer:
 
         token = response.cookies["remember_user_token"]
         self.token = token
-        logging.error("Error getting token")
 
     def sync(self, books):
         # try to match books with currently reading books by comparing titles. Get best match

@@ -39,9 +39,9 @@ def task(args):
         # add all audiobooks to book list
         try:
             audiobooks = audiobookshelfSync.get_audiobookshelf_books()
-        except:
+        except Exception as ex:
             audiobooks = []
-            logging.error("Could not get progress from audiobookshelf")
+            logging.error("Could not get progress from audiobookshelf: " + ex)
         for book in audiobooks:
             books.append(book)
     if (args.moonplus):
