@@ -3,7 +3,7 @@ charset-normalizer==3.3.2
 idna==3.7
 nextcloud-api-wrapper==0.2.3
 rapidfuzz==3.6.1
-requests==2.32.0
+requests==2.32.4
 schedule==1.2.1
 six==1.16.0
 thefuzz==0.20.0
